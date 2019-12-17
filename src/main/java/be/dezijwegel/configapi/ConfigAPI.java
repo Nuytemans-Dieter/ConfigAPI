@@ -9,6 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.InputStreamReader;
@@ -291,33 +292,44 @@ public class ConfigAPI{
      */
     public Map<String, Object> getMissingOptions()
     {
+        return getMissingOptions(null, null);
+    }
+
+
+    /**
+     * Get all options that are present in defaultConfig but NOT in liveConfig
+     * By swapping defaultConfig and liveConfig, you can get all redundant options!
+     * Both arguments are Nullable! If no value is given, they will be replaced by the contents of each respective file
+     *      -> liveConfig would be replaced by the contents of the config on the server
+     *      -> defaultConfig would be replaced by the contents of the default config file
+     * @param liveConfig the YamlConfiguration with possible missing options
+     * @param defaultConfig the YamlConfiguration which is assumed to be complete
+     * @return a Map<String, Object> containing all missing options and
+     */
+    public Map<String, Object> getMissingOptions(@Nullable YamlConfiguration liveConfig, @Nullable YamlConfiguration defaultConfig)
+    {
         Map<String, Object> missingOptions = new HashMap<String, Object>();
 
-        // Get the current config on the server
+        // Get the current config on the server if none was provided
 
-        YamlConfiguration liveConfig = getLiveConfiguration();
+        if (liveConfig == null)
+            liveConfig = getLiveConfiguration();
+
+        // Get the current default config if none was provided
+
+        if (defaultConfig == null)
+            defaultConfig = getDefaultConfiguration();
 
         // Get the missing configuration options that are not configuration sections
 
-        Reader defConfigStream = null;
-        try {
-            defConfigStream = new InputStreamReader(plugin.getResource(fileName), "UTF8");
-        } catch (UnsupportedEncodingException ex) {}
-
-        if (defConfigStream != null) {
-
-            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-
-            for (String path : defConfig.getKeys(true))
+        for (String path : defaultConfig.getKeys(true))
+        {
+            if ( ! defaultConfig.isConfigurationSection(path) )
             {
-                if ( ! defConfig.isConfigurationSection(path) )
-                {
-                    if ( !liveConfig.contains(path) ) {
-                        missingOptions.put(path, defConfig.get( path ));
-                    }
+                if ( !liveConfig.contains(path) ) {
+                    missingOptions.put(path, defaultConfig.get( path ));
                 }
             }
-
         }
 
         return missingOptions;
@@ -326,26 +338,57 @@ public class ConfigAPI{
 
     /**
      * Compare the default file with the one on the server and report every missing option
+     * This will also output all redundant options if this setting is enabled in Settings (default: false)
      */
     public void reportMissingOptions()
     {
 
-        Map<String, Object> missingOptions = getMissingOptions();
+        YamlConfiguration liveConfig = getLiveConfiguration();
+        YamlConfiguration defConfig = getDefaultConfiguration();
 
-        if (missingOptions.size() > 0)
+        Map<String, Object> missingOptions = getMissingOptions(liveConfig, defConfig);
+
+
+        reportFaultyOptions(true, missingOptions);
+
+        if (settings.getReportRedundantOptions())
+        {
+            Map<String, Object> redundantOptions = getMissingOptions(defConfig, liveConfig);
+            reportFaultyOptions(false, redundantOptions);
+        }
+    }
+
+
+    /**
+     * Reports all options in the map as either missing options or redundant options
+     * @param isMissing boolean that indicates whether the method will be reporting missing options or redundant options
+     * @param options Map<String, Object> which maps paths to values
+     */
+    private void reportFaultyOptions(boolean isMissing, Map<String, Object> options)
+    {
+
+        String keyword = isMissing ? "missing" : "redundant";
+
+        if (options.size() > 0)
         {
 
-            if (missingOptions.size() == 1)
-                Logger.sendToConsole(ChatColor.RED + "A missing option has been found in " + fileName + "!", plugin);
+            if (options.size() == 1)
+                Logger.sendToConsole(ChatColor.RED + "A " + keyword + " option has been found in " + fileName + "!", plugin);
             else
-                Logger.sendToConsole("" + ChatColor.RED + missingOptions.size() + " Missing options have been found in " + fileName + "!", plugin);
+                Logger.sendToConsole("" + ChatColor.RED + options.size() + keyword + " options have been found in " + fileName + "!", plugin);
 
-            Logger.sendToConsole("" + ChatColor.RED + "Please add the missing option(s) manually or delete this file and perform a reload (/bs reload)", plugin);
-            Logger.sendToConsole("" + ChatColor.RED + "The default values will be used until then", plugin);
-
+            if (isMissing)
+            {
+                Logger.sendToConsole("" + ChatColor.RED + "Please add the missing options manually or delete this file and perform a reload (/bs reload)", plugin);
+                Logger.sendToConsole("" + ChatColor.RED + "The default values will be used until then", plugin);
+            }
+            else
+            {
+                Logger.sendToConsole("" + ChatColor.RED + "Redundant options won't have any effect. Feel free to delete them.", plugin);
+            }
             YamlConfiguration defaultConfig = getDefaultConfiguration();
 
-            for (Map.Entry<String, Object> entry : missingOptions.entrySet())
+            for (Map.Entry<String, Object> entry : options.entrySet())
             {
                 String path = entry.getKey();
 
@@ -369,11 +412,13 @@ public class ConfigAPI{
                 path += "'" + sections[0] + "'";                           // Add the actual setting name
 
                 // Send message
-                Logger.sendToConsole("" + ChatColor.DARK_RED + "Missing option: " + path + " with default value: " + value, plugin);
+                if (isMissing)
+                    Logger.sendToConsole("" + ChatColor.DARK_RED + "Missing option: " + path + " with default value: " + value, plugin);
+                else
+                    Logger.sendToConsole("" + ChatColor.DARK_RED + "Redundant option: " + path, plugin);
             }
         } else {
-            Logger.sendToConsole("No missing options were found in " + fileName + "!", plugin);
+            Logger.sendToConsole("No " + keyword + " options were found in " + fileName + "!", plugin);
         }
     }
-
 }
