@@ -1,0 +1,10 @@
+# This is just a file to test configuration
+test_option: "Does this work?"
+affirm: true
+deny: false
+how:
+  about:
+    indentation: true
+    or: "Would it not work?"
+  less_indent: 34
+alright_then: "yay!"
