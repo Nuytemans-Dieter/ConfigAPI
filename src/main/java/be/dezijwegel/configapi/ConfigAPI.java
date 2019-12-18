@@ -64,6 +64,34 @@ public class ConfigAPI{
 
 
 
+    // ------------ //
+    // Getting data //
+    // ------------ //
+
+
+    /**
+     * Check if the given path exists
+     * @param path the path to be checked
+     * @return a boolean, exists: true. Does not exist: false
+     */
+    public boolean contains(String path)
+    {
+        return contents.containsKey( path );
+    }
+
+
+    /**
+     * Get an Object at a given path
+     * @param path path
+     * @return Object
+     */
+    public Object getObject(String path)
+    {
+        return contents.get( path );
+    }
+
+
+
     // ------------------- //
     // Settings management //
     // ------------------- //
@@ -218,16 +246,19 @@ public class ConfigAPI{
         // Get the live config
         liveConfiguration = getLiveConfiguration();
 
-        // If enabled: add the default values to the live configuration where options are missing
-        if ( settings.getLoadDefaults() ) {
-            defConfiguration = getDefaultConfiguration();
-        }
-
+        // If missing/redundant options need to be reported on reload:
         if (settings.getReportMissingOptions())
             reportMissingOptions();
 
-        loadFromConfigurations( liveConfiguration, defConfiguration);
-
+        // If enabled: add the default values to the live configuration where options are missing
+        if ( settings.getLoadDefaults() ) {
+            defConfiguration = getDefaultConfiguration();
+            loadFromConfigurations( liveConfiguration, defConfiguration);
+        }
+        else
+        {   // If defaults should not be loaded: only provide the live config
+            loadFromConfigurations( liveConfiguration );
+        }
     }
 
 
@@ -338,7 +369,7 @@ public class ConfigAPI{
 
     /**
      * Compare the default file with the one on the server and report every missing option
-     * This will also output all redundant options if this setting is enabled in Settings (default: false)
+     * This will also report all redundant options if this setting is enabled in Settings (default: false)
      */
     public void reportMissingOptions()
     {
