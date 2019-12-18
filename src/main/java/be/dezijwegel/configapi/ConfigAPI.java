@@ -35,7 +35,7 @@ public class ConfigAPI{
 
     private Map<String, Object> contents;   // Will contain the loaded values
 
-    private Settings settings;              // An instance that handles all settings
+    private Settings settings = new Settings();          // An instance that handles all settings
 
 
 
@@ -44,15 +44,41 @@ public class ConfigAPI{
      * Some terminology used in the documentation:
      *      Default config: The config file which is provided by the plugin (default)
      *      Live config: The config file on the server which server admins can edit
-     * @param fileName the name of the file you wish (config.yml, lang.yml, etc.)
+     * @param fileName the name of the file you wish to read (config.yml, lang.yml, etc.)
      * @param plugin your plugin
      */
     public ConfigAPI(String fileName, JavaPlugin plugin) {
+
+        initializeAPI(fileName, plugin);    // Perform default initialization
+
+    }
+
+
+    /**
+     * Creates an instance of ConfigAPI which will manage your config files. Multiple files will require multiple instances
+     * Some terminology used in the documentation:
+     *      Default config: The config file which is provided by the plugin (default)
+     *      Live config: The config file on the server which server admins can edit
+     * This constructor starts by updating the settings
+     * @param fileName the name of the file you wish to read (config.yml, lang.yml, etc.)
+     * @param settings the settings to be used by this API
+     * @param plugin your plugin
+     */
+    public ConfigAPI(String fileName, Settings settings, JavaPlugin plugin) {
+        this.settings = settings;            // update the settings
+        initializeAPI(fileName, plugin);     // Perform default initialization
+    }
+
+
+    /**
+     * Contains all options for startup
+     */
+    private void initializeAPI(String fileName, JavaPlugin plugin)
+    {
         this.plugin = plugin;           // Keep track of an instance of this plugin
         this.fileName = fileName;       // Store the filename of this config file
 
         contents = new HashMap<String, Object>();       // Create a Map that will contain all paths and values
-        settings = new Settings();                      // Initialize the default settings
 
         if ( settings.getAutoLoadValues() )             // Check if auto loading is enabled
         {
@@ -61,7 +87,6 @@ public class ConfigAPI{
 
         copyDefConfigIfNeeded();    // Checks if a live config is available, if not: a new default config file is generated
     }
-
 
 
     // ------------ //
@@ -404,18 +429,18 @@ public class ConfigAPI{
         {
 
             if (options.size() == 1)
-                Logger.sendToConsole(ChatColor.RED + "A " + keyword + " option has been found in " + fileName + "!", plugin);
+                Logger.sendToConsole("A " + keyword + " option has been found in " + fileName + "!", plugin, settings.getUseColors() ? ChatColor.RED : null);
             else
-                Logger.sendToConsole("" + ChatColor.RED + options.size() + keyword + " options have been found in " + fileName + "!", plugin);
+                Logger.sendToConsole(options.size() + keyword + " options have been found in " + fileName + "!", plugin, settings.getUseColors() ? ChatColor.RED : null);
 
             if (isMissing)
             {
-                Logger.sendToConsole("" + ChatColor.RED + "Please add the missing options manually or delete this file and perform a reload (/bs reload)", plugin);
-                Logger.sendToConsole("" + ChatColor.RED + "The default values will be used until then", plugin);
+                Logger.sendToConsole("Please add the missing options manually or delete this file and perform a reload (/bs reload)", plugin, settings.getUseColors() ? ChatColor.RED : null);
+                Logger.sendToConsole("The default values will be used until then", plugin, settings.getUseColors() ? ChatColor.RED : null);
             }
             else
             {
-                Logger.sendToConsole("" + ChatColor.RED + "Redundant options won't have any effect. Feel free to delete them.", plugin);
+                Logger.sendToConsole("Redundant options won't have any effect. Feel free to delete them.", plugin, settings.getUseColors() ? ChatColor.RED : null);
             }
             YamlConfiguration defaultConfig = getDefaultConfiguration();
 
@@ -444,12 +469,12 @@ public class ConfigAPI{
 
                 // Send message
                 if (isMissing)
-                    Logger.sendToConsole("" + ChatColor.DARK_RED + "Missing option: " + path + " with default value: " + value, plugin);
+                    Logger.sendToConsole("" + "Missing option: " + path + " with default value: " + value, plugin, settings.getUseColors() ? ChatColor.DARK_RED : null);
                 else
-                    Logger.sendToConsole("" + ChatColor.DARK_RED + "Redundant option: " + path, plugin);
+                    Logger.sendToConsole("" + "Redundant option: " + path, plugin, settings.getUseColors() ? ChatColor.DARK_RED : null);
             }
         } else {
-            Logger.sendToConsole("No " + keyword + " options were found in " + fileName + "!", plugin);
+            Logger.sendToConsole("No " + keyword + " options were found in " + fileName + "!", plugin, settings.getUseColors() ? ChatColor.GREEN : null);
         }
     }
 }

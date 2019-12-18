@@ -1,6 +1,7 @@
 package be.dezijwegel.configapi.utility;
 
 import be.dezijwegel.configapi.Settings;
+import jdk.internal.jline.internal.Nullable;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
@@ -38,9 +39,16 @@ public class Logger {
      * The name of the provided plugin will be used as prefix (the prefix will not be colored)
      * @param message the message to be sent
      * @param plugin the plugin sending the message
+     * @param color the color in which the text should be displayed (or use the default color by providing null)
      */
-    public static void sendToConsole(String message, Plugin plugin, ChatColor color)
+    public static void sendToConsole(String message, Plugin plugin, @Nullable ChatColor color)
     {
+        if (color == null)
+        {
+            sendToConsole(message, plugin);
+            return;
+        }
+
         ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
         console.sendMessage("[" + plugin.getName() + "] " + color + message);
     }
