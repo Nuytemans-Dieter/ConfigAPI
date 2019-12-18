@@ -2,13 +2,15 @@ package be.dezijwegel.configapi;
 
 import be.dezijwegel.configapi.utility.Logger;
 import jdk.internal.jline.internal.Nullable;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.*;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Vector;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -17,6 +19,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -107,6 +110,7 @@ public class ConfigAPI{
 
     /**
      * Get an Object at a given path
+     * Subsections are indicated with a '.' just like they are for a ConfigurationSection
      * @param path path
      * @return Object
      */
@@ -116,6 +120,200 @@ public class ConfigAPI{
     }
 
 
+    /**
+     * Get a setting from the config file
+     * Subsections are indicated with a '.' just like they are for a ConfigurationSection
+     * @param path the path of the setting
+     * @return an empty String when the option does not exist or the value is not of the requested type
+     */
+    public String getString(String path) {
+        Object value = contents.get( path );
+
+        if ( value instanceof String )
+        {
+            return (String) value;
+        } else {
+            if (settings.getDoDebugLogging())
+                Logger.log("Path " + path + " was not found in " + fileName + " while expecting a String (and found: " + value.getClass().getSimpleName() + ")");
+            return "";
+        }
+    }
+
+
+
+    /**
+     * Get a setting from the config file
+     * Subsections are indicated with a '.' just like they are for a ConfigurationSection
+     * @param path the path of the setting
+     * @return zero (0) when the option does not exist or the value is not of the requested type
+     */
+    public int getInt(String path) {
+        Object value = contents.get( path );
+
+        if ( value instanceof Integer )
+        {
+            return (Integer) value;
+        } else {
+            if (settings.getDoDebugLogging())
+                Logger.log("Path " + path + " was not found in " + fileName + " while expecting an Integer (and found: " + value.getClass().getSimpleName() + ")");
+            return 0;
+        }
+    }
+
+
+    /**
+     * Get a setting from the config file
+     * Subsections are indicated with a '.' just like they are for a ConfigurationSection
+     * @param path the path of the setting
+     * @return false when the option does not exist or the value is not of the requested type
+     */
+    public boolean getBoolean(String path) {
+        Object value = contents.get( path );
+
+        if ( value instanceof Boolean )
+        {
+            return (Boolean) value;
+        } else {
+            if (settings.getDoDebugLogging())
+                Logger.log("Path " + path + " was not found in " + fileName + " while expecting a Boolean (and found: " + value.getClass().getSimpleName() + ")");
+            return false;
+        }
+    }
+
+
+    /**
+     * Get a setting from the config file
+     * Subsections are indicated with a '.' just like they are for a ConfigurationSection
+     * @param path the path of the setting
+     * @return zero (0) when the option does not exist or the value is not of the requested type
+     */
+    public double getDouble(String path) {
+        Object value = contents.get( path );
+
+        if ( value instanceof Double )
+        {
+            return (Double) value;
+        } else {
+            if (settings.getDoDebugLogging())
+                Logger.log("Path " + path + " was not found in " + fileName + " while expecting a Double (and found: " + value.getClass().getSimpleName() + ")");
+            return 0;
+        }
+    }
+
+
+    /**
+     * Get a setting from the config file
+     * Subsections are indicated with a '.' just like they are for a ConfigurationSection
+     * @param path the path of the setting
+     * @return zero (0) when the option does not exist or the value is not of the requested type
+     */
+    public long getLong(String path) {
+        Object value = contents.get( path );
+
+        if ( value instanceof Long )
+        {
+            return (Long) value;
+        } else {
+            if (settings.getDoDebugLogging())
+                Logger.log("Path " + path + " was not found in " + fileName + " while expecting a Long (and found: " + value.getClass().getSimpleName() + ")");
+            return 0;
+        }
+    }
+
+
+    /**
+     * Get a setting from the config file
+     * Subsections are indicated with a '.' just like they are for a ConfigurationSection
+     * @param path the path of the setting
+     * @return null when the option does not exist or the value is not of the requested type
+     */
+    public ItemStack getItemStack(String path) {
+        Object value = contents.get( path );
+
+        if ( value instanceof ItemStack )
+        {
+            return (ItemStack) value;
+        } else {
+            if (settings.getDoDebugLogging())
+                Logger.log("Path " + path + " was not found in " + fileName + " while expecting an ItemStack (and found: " + value.getClass().getSimpleName() + ")");
+            return null;
+        }
+    }
+
+    /*
+
+    // The commented methods below might be implemented at a later time, if the need arises
+
+    public List<?> getList(String s) {
+        return null;
+    }
+
+    public List<String> getStringList(String s) {
+        return null;
+    }
+
+    public List<Integer> getIntegerList(String s) {
+        return null;
+    }
+
+    public List<Boolean> getBooleanList(String s) {
+        return null;
+    }
+
+    public List<Double> getDoubleList(String s) {
+        return null;
+    }
+
+    public List<Float> getFloatList(String s) {
+        return null;
+    }
+
+    public List<Long> getLongList(String s) {
+        return null;
+    }
+
+    public List<Byte> getByteList(String s) {
+        return null;
+    }
+
+    public List<Character> getCharacterList(String s) {
+        return null;
+    }
+
+    public List<Short> getShortList(String s) {
+        return null;
+    }
+
+    public List<Map<?, ?>> getMapList(String s) {
+        return null;
+    }
+
+    public <T> T getObject(String s, Class<T> aClass) {
+        return null;
+    }
+
+
+    public <T extends ConfigurationSerializable> T getSerializable(String s, Class<T> aClass) {
+        return null;
+    }
+
+    public Vector getVector(String s) {
+        return null;
+    }
+
+    public OfflinePlayer getOfflinePlayer(String s) {
+        return null;
+    }
+
+    public Color getColor(String s) {
+        return null;
+    }
+
+    public Location getLocation(String s) {
+        return null;
+    }
+
+    */
 
     // ------------------- //
     // Settings management //

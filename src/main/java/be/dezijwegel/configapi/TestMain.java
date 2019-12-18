@@ -22,9 +22,19 @@ public class TestMain extends JavaPlugin {
 
         checkLoadDefaults();
 
-        
+        testGetTypes();
          */
 
+
+
+    }
+
+    public void testGetTypes()
+    {
+        ConfigAPI config = new ConfigAPI("exampleConfig.yml", this);
+        Logger.log("Found String: " + config.getString("test_option"));
+        Logger.log("Found int: " + config.getInt("how.less_indent"));
+        Logger.log("Found boolean: " + config.getBoolean("affirm"));
     }
 
     public void checkMissingOptions()
