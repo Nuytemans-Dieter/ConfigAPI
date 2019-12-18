@@ -503,7 +503,7 @@ public class ConfigAPI{
             Logger.log("Forcing default config! The live config will be overwritten");
 
         if (settings.getReportNewConfig())
-            Logger.sendToConsole("Forcing a fresh " + fileName + " ...", plugin);
+            Logger.sendToConsole("Forcing a fresh " + fileName + " ...", plugin, settings.getUseColors() ? ChatColor.RED : null);
 
         plugin.saveResource(fileName, true);
     }
@@ -521,7 +521,7 @@ public class ConfigAPI{
         if (!file.exists())
         {
             if (settings.getReportNewConfig())
-                Logger.sendToConsole("Copying a new " + fileName + " ...", plugin);
+                Logger.sendToConsole("Copying a new " + fileName + " ...", plugin, settings.getUseColors() ? ChatColor.GREEN : null);
 
             plugin.saveResource(fileName, false);       // saves if the file does not exist but will not overwrite
 
