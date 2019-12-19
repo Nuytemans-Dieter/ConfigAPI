@@ -385,6 +385,30 @@ public class ConfigAPI{
     }
 
 
+    /**
+     * Any missing options of the live config are added and set to their default value
+     * @return YamlConfiguration (
+     */
+    public YamlConfiguration getConfiguration()
+    {
+        YamlConfiguration liveConfig = getLiveConfiguration();
+        YamlConfiguration defConfig = getDefaultConfiguration();
+
+        for (String key : defConfig.getKeys(true))
+        {
+            if ( ! defConfig.isConfigurationSection( key ))
+            {
+                if ( ! liveConfig.contains( key ) )
+                {
+                    liveConfig.set(key, defConfig.get( key ));
+                }
+            }
+        }
+
+        return liveConfig;
+    }
+
+
     // ------------------- //
     // Loading into memory //
     // ------------------- //
