@@ -239,81 +239,7 @@ public class ConfigAPI{
             return null;
         }
     }
-
-    /*
-
-    // The commented methods below might be implemented at a later time, if the need arises
-
-    public List<?> getList(String s) {
-        return null;
-    }
-
-    public List<String> getStringList(String s) {
-        return null;
-    }
-
-    public List<Integer> getIntegerList(String s) {
-        return null;
-    }
-
-    public List<Boolean> getBooleanList(String s) {
-        return null;
-    }
-
-    public List<Double> getDoubleList(String s) {
-        return null;
-    }
-
-    public List<Float> getFloatList(String s) {
-        return null;
-    }
-
-    public List<Long> getLongList(String s) {
-        return null;
-    }
-
-    public List<Byte> getByteList(String s) {
-        return null;
-    }
-
-    public List<Character> getCharacterList(String s) {
-        return null;
-    }
-
-    public List<Short> getShortList(String s) {
-        return null;
-    }
-
-    public List<Map<?, ?>> getMapList(String s) {
-        return null;
-    }
-
-    public <T> T getObject(String s, Class<T> aClass) {
-        return null;
-    }
-
-
-    public <T extends ConfigurationSerializable> T getSerializable(String s, Class<T> aClass) {
-        return null;
-    }
-
-    public Vector getVector(String s) {
-        return null;
-    }
-
-    public OfflinePlayer getOfflinePlayer(String s) {
-        return null;
-    }
-
-    public Color getColor(String s) {
-        return null;
-    }
-
-    public Location getLocation(String s) {
-        return null;
-    }
-
-    */
+    
 
     // ------------------- //
     // Settings management //
@@ -387,6 +313,7 @@ public class ConfigAPI{
 
     /**
      * Any missing options of the live config are added and set to their default value
+     * This will be generated when this method is called so you might want to avoid repeating this call too many times
      * @return YamlConfiguration (
      */
     public YamlConfiguration getConfiguration()
