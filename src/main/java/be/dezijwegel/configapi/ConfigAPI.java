@@ -109,6 +109,16 @@ public class ConfigAPI{
 
 
     /**
+     * Get the name of this file
+     * @return the file name (String)
+     */
+    public String getFileName()
+    {
+        return fileName;
+    }
+
+
+    /**
      * Get an Object at a given path
      * Subsections are indicated with a '.' just like they are for a ConfigurationSection
      * @param path path
@@ -336,6 +346,7 @@ public class ConfigAPI{
     }
 
 
+
     // ------------------- //
     // Loading into memory //
     // ------------------- //
@@ -547,7 +558,7 @@ public class ConfigAPI{
      */
     public void reportMissingOptions()
     {
-
+        ConsoleCommandSender console = Bukkit.getConsoleSender();
         YamlConfiguration liveConfig = getLiveConfiguration();
         YamlConfiguration defConfig = getDefaultConfiguration();
 
