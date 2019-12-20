@@ -9,4 +9,4 @@
  - Forcefully copy a config file from the plugin's resources folder in the jar-file to the server
  - `Copy a config file from jar to the server` if no file exists yet
 
-And above all, a complete and clear documentation will be provided as well (TBA).
+And above all, a [complete and clear documentation is provided through the wiki](https://github.com/Nuytemans-Dieter/ConfigAPI/wiki)!
