@@ -1,7 +1,7 @@
-# SpigotConfigAPI
+# ConfigAPI
 Looking for the wiki? [Click here](https://github.com/Nuytemans-Dieter/ConfigAPI/wiki)!
 
- A config file API created for Spigot plugins which only supports YAML files. It should **definitely** be compatible with Spigot 1.12 and newer but was programmed against the latest version of Spigot 1.15 at the time of writing. Compatibility with versions prior to Spigot 1.12 is likely but has not been tested.
+ This is a config file library created for Spigot plugins which only supports YAML files. It should **definitely** be compatible with Spigot 1.12 and newer but was programmed against the latest version of Spigot 1.15 at the time of writing. Compatibility with versions prior to Spigot 1.12 is likely but has not been tested.
  The first release version is now available in [the versions folder](https://github.com/Nuytemans-Dieter/ConfigAPI/tree/master/versions). There may be future updates but they will be few and mainly focused on maintaining compatibility through Spigot versions.
  - Allow the developer to focus on plugin functionality instead of config files
  - Easily work with `several config files`
